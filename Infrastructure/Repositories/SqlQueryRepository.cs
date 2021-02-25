@@ -33,9 +33,9 @@ namespace Infrastructure.Repositories
 	                  , pd.pwd_Tekst05 'DHL'
 	                  , flw_IdGrupyFlag
 	                  , flw_IdFlagi
-                  FROM [neopak2].[dbo].[dok__Dokument] dd with(nolock)
-                  inner join [neopak2].[dbo].[pw_Dane] pd with(nolock) on pd.pwd_IdObiektu = dd.dok_Id
-                  left join  [neopak2].[dbo].[fl_Wartosc] fw with(nolock) on fw.flw_IdObiektu = dd.dok_Id
+                  FROM [dbo].[dok__Dokument] dd with(nolock)
+                  inner join [dbo].[pw_Dane] pd with(nolock) on pd.pwd_IdObiektu = dd.dok_Id
+                  left join  [dbo].[fl_Wartosc] fw with(nolock) on fw.flw_IdObiektu = dd.dok_Id
                   where
                   dok_DataWyst >= '{dateTime.ToString("yyyy-MM-dd")}' and
                   dd.dok_typ in (2, 21) and
