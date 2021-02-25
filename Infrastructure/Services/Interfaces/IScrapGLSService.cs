@@ -9,6 +9,6 @@ namespace Infrastructure.Services.Interfaces
 {
     public interface IScrapGLSService : IService
     {
-        Task<IEnumerable<ShippingStatusDto>> GetPackagesStatus(IEnumerable<string> trackingList);
+        Task<IEnumerable<GLSShippingStatusDto>> GetPackagesStatus(IEnumerable<string> trackingList);
     }
 }

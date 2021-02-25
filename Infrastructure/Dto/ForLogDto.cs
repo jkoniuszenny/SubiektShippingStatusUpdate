@@ -13,7 +13,7 @@ namespace Infrastructure.Dto
 
         public override string ToString()
         {
-            return $"Dokument: {DocumentId}, stara flaga: {OldFlag}, nowa flaga: {NewFlag}, wykonana operacja: {Operation}  ------ {DateTime.Now}";
+            return $"{DateTime.Now} ------ Dokument: {DocumentId}, stara flaga: {OldFlag}, nowa flaga: {NewFlag}, wykonana operacja: {Operation}";
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Infrastructure.Dto.GLS
 {
-     public class JsonDto
+     public class GLSJsonDto
     {
         public IEnumerable<TuStatusDto> TuStatus { get; set; }
     }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Core.Models
 {
-    public class MappingFlagToShippingStatus
+    public class MappingGLSFlagToShippingStatus
     {
         public int FlagId { get; set; }
         public int FlagGroup { get; set; }

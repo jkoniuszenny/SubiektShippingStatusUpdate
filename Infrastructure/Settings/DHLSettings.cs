@@ -6,6 +6,7 @@ namespace Infrastructure.Settings
 {
     public class DHLSettings
     {
+        public string ApiKey { get; set; }
         public string MainUrl { get; set; }
     }
 }

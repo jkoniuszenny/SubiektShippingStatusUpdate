@@ -23,7 +23,7 @@ namespace Infrastructure.IoC
             builder.RegisterInstance(AutoMapperConfig.Initialize()).SingleInstance();
             builder.RegisterModule<RepositoryModule>();
             builder.RegisterModule<ServiceModule>();
-            builder.RegisterModule<DbContextModule>();
+            builder.RegisterModule(new DbContextModule(_configuration));
         }
     }
 }

@@ -9,6 +9,6 @@ namespace Core.Repositories.Interfaces
 {
     public interface ISqlQueryRepository : IRepository
     {
-        Task<IEnumerable<TrackingNumbersSelect>> GetTrackingNumber(IEnumerable<MappingFlagToShippingStatus> mappingFlagToShippings ,DateTime dateTime);
+        Task<IEnumerable<TrackingNumbersSelect>> GetTrackingNumber(IEnumerable<MappingGLSFlagToShippingStatus> mappingGLSFlagToShippings, IEnumerable<MappingDHLFlagToShippingStatus> mappingDHLFlagToShippings, DateTime dateTime);
     }
 }

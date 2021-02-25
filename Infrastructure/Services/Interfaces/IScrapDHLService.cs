@@ -1,4 +1,6 @@
-﻿using Infrastructure.Dto.GLS;
+﻿using Core.Models;
+using Infrastructure.Dto.DHL;
+using Infrastructure.Dto.GLS;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,6 +10,6 @@ namespace Infrastructure.Services.Interfaces
 {
     public interface IScrapDHLService : IService
     {
-        Task<IEnumerable<ShippingStatusDto>> GetPackagesStatus(IEnumerable<string> trackingList);
+        Task<IEnumerable<DHLShippingStatusDto>> GetPackagesStatus(IEnumerable<string> trackingList);
     }
 }

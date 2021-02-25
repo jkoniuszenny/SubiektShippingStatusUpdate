@@ -20,10 +20,10 @@ namespace Infrastructure.Repositories
             _databaseContext = databaseContext;
         }
 
-        public async Task<IEnumerable<TrackingNumbersSelect>> GetTrackingNumber(IEnumerable<MappingFlagToShippingStatus> mappingFlagToShippings, DateTime dateTime)
+        public async Task<IEnumerable<TrackingNumbersSelect>> GetTrackingNumber(IEnumerable<MappingGLSFlagToShippingStatus> mappingGLSFlagToShippings, IEnumerable<MappingDHLFlagToShippingStatus> mappingDHLFlagToShippings, DateTime dateTime)
         {
             //Wybieram listę flag dla których wykonam pobranie danych z bazy
-            List<int> flagsId = mappingFlagToShippings.Where(w=>w.GLSStatus == GLSStatus.DELIVERED).Select(s=>s.FlagId).ToList();
+            List<int> flagsId = mappingGLSFlagToShippings.Where(w => w.GLSStatus == GLSStatus.DELIVERED).Select(s => s.FlagId).ToList();
 
             //Query pobierające dane z bazy 
             string query = @$"
@@ -46,24 +46,28 @@ namespace Infrastructure.Repositories
             var result = CustomSqlQueryExtensions.RawSqlQuery<TrackingNumbersSelect>(
                 _databaseContext,
                 query,
-                x => new TrackingNumbersSelect(){
+                x => new TrackingNumbersSelect()
+                {
                     dok_Id = (int?)x[0],
                     dok_Type = (int?)x[1],
                     GLS = CustomSqlQueryExtensions.ConvertFromDBVal<string>(x[2]),
                     DHL = CustomSqlQueryExtensions.ConvertFromDBVal<string>(x[3]),
                     flw_IdGrupyFlag = CustomSqlQueryExtensions.ConvertFromDBVal<int>(x[4]),
                     flw_IdFlagi = CustomSqlQueryExtensions.ConvertFromDBVal<int>(x[5]),
-                    GLSStatus = mappingFlagToShippings.FirstOrDefault(f=>f.FlagId == CustomSqlQueryExtensions.ConvertFromDBVal<int>(x[5]))?.GLSStatus ?? GLSStatus.NULL
+                    //GLSStatus = mappingGLSFlagToShippings.FirstOrDefault(f => f.FlagId == CustomSqlQueryExtensions.ConvertFromDBVal<int>(x[5]))?.GLSStatus ?? GLSStatus.NULL,
+                    //DHLStatus = mappingDHLFlagToShippings.FirstOrDefault(f => f.FlagId == CustomSqlQueryExtensions.ConvertFromDBVal<int>(x[5]))?.DHLStatus ?? DHLStatus.unknown,
                 }
             );
 
             //Jeżeli było kilka nr dla jednego dokumentu, zostawiam tylko jeden
-            result.All(a=> 
+            result.All(a =>
             {
+                a.DHLStatus = a.DHL is { } ? mappingDHLFlagToShippings.FirstOrDefault(f => f.FlagId == a.flw_IdFlagi)?.DHLStatus ?? DHLStatus.unknown : default;
+                a.GLSStatus = a.GLS is { } ? mappingGLSFlagToShippings.FirstOrDefault(f => f.FlagId == a.flw_IdFlagi)?.GLSStatus ?? GLSStatus.NULL : default;
                 a.GLS = a.GLS is { } && a.GLS.Contains(",") ? a.GLS.Split(",")[0] : a.GLS;
                 return true;
             });
-            
+
 
             return await Task.FromResult(result);
         }

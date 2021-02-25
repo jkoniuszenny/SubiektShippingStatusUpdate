@@ -13,7 +13,8 @@ namespace Core.Selects
         public string  DHL { get; set; }
         public int? flw_IdGrupyFlag { get; set; }
         public int? flw_IdFlagi { get; set; }
-        public GLSStatus GLSStatus { get; set; }
+        public GLSStatus? GLSStatus { get; set; }
+        public DHLStatus? DHLStatus { get; set; }
         //public string flg_Text { get; set; }
 
     }

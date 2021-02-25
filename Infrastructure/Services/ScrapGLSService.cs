@@ -29,9 +29,9 @@ namespace Infrastructure.Services
 
         }
 
-        public async Task<IEnumerable<ShippingStatusDto>> GetPackagesStatus(IEnumerable<string> trackingList)
+        public async Task<IEnumerable<GLSShippingStatusDto>> GetPackagesStatus(IEnumerable<string> trackingList)
         {
-            List<ShippingStatusDto> shippingStatus = new List<ShippingStatusDto>();
+            List<GLSShippingStatusDto> shippingStatus = new List<GLSShippingStatusDto>();
 
             for (int i = 0; i <= ((trackingList.Count() + 50) / 100 * 100) / 100; i++)
             {
@@ -48,11 +48,11 @@ namespace Infrastructure.Services
 
                 var respons = await _restClient.ExecuteAsync(restRequest);
 
-                JsonDto JsonDto = new JsonDto();
+                GLSJsonDto JsonDto = new GLSJsonDto();
 
                 try
                 {
-                    JsonDto = JsonSerializer.Deserialize<JsonDto>(respons.Content, _JsonSerializerOptions);
+                    JsonDto = JsonSerializer.Deserialize<GLSJsonDto>(respons.Content, _JsonSerializerOptions);
                 }
                 catch
                 {
@@ -62,7 +62,7 @@ namespace Infrastructure.Services
                 {
                     try
                     {
-                        shippingStatus.Add(new ShippingStatusDto()
+                        shippingStatus.Add(new GLSShippingStatusDto()
                         {
                             TrackingNumber = item.TuNo,
                             ActualStatus = item.ProgressBar.StatusInfo.Contains("DELIVEREDPS") ? GLSStatus.DELIVERED : (GLSStatus)Enum.Parse(typeof(GLSStatus), item.ProgressBar.StatusInfo)

@@ -10,14 +10,15 @@ namespace Infrastructure.Database
 {
     public class DatabaseContext : DbContext
     {
+        private readonly DatabaseSettings _databaseSettings;
 
         public DatabaseContext(DbContextOptions<DatabaseContext> dbContextOptions) : base(dbContextOptions)
         {
         }
 
-        public DatabaseContext()
+        public DatabaseContext(DatabaseSettings databaseSettings)
         {
-
+            _databaseSettings = databaseSettings;
         }
 
         public DbSet<FlagDictionary> FlagDictionary { get; set; }
@@ -26,7 +27,8 @@ namespace Infrastructure.Database
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.EnableDetailedErrors(true);
-            optionsBuilder.UseSqlServer("Server=localhost; Database=neopak2; Trusted_Connection=True; MultipleActiveResultSets=true");// _settings.ConnectionString, s => s.CommandTimeout(60));
+            //optionsBuilder.UseSqlServer("Server=localhost; Database=neopak2; Trusted_Connection=True; MultipleActiveResultSets=true");// _settings.ConnectionString, s => s.CommandTimeout(60));
+            optionsBuilder.UseSqlServer(_databaseSettings.ConnectionString);
             optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
         }
 

@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using Core.Enums;
+using Core.Models;
+using Infrastructure.Dto.DHL;
 
 namespace Infrastructure.Services
 {
@@ -23,22 +25,27 @@ namespace Infrastructure.Services
 
             _JsonSerializerOptions = new JsonSerializerOptions();
             _JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-
-
         }
 
-        public async Task<IEnumerable<ShippingStatusDto>> GetPackagesStatus(IEnumerable<string> trackingList)
+        public async Task<IEnumerable<DHLShippingStatusDto>> GetPackagesStatus(IEnumerable<string> trackingList)
         {
-            List<ShippingStatusDto> shippingStatus = new List<ShippingStatusDto>();
+            List<DHLShippingStatusDto> shippingStatus = new List<DHLShippingStatusDto>();
 
-            for (int i = 0; i <= ((trackingList.Count() + 50) / 100 * 100)/100; i++)
+            foreach (var item in trackingList)
             {
-                string joined = String.Join("+",trackingList.Skip(100 * ((i+1) - 1)).Take(100));
-
-                if (joined.Length < 1)
+                try
+                {
+                    Convert.ToUInt64(item);
+                }
+                catch 
+                {
                     continue;
-                
-                _restClient = new RestClient($"https://gls-group.eu/app/service/open/rest/PL/pl/rstt001?match={joined}&type=&caller=witt002&millis={Convert.ToUInt64((DateTime.Now - new DateTime(1970, 1, 1)).TotalMilliseconds)}");
+                }
+
+                    
+
+                _restClient = new RestClient($"{_dhlSettings.MainUrl}?trackingNumber={item}&language=en&limit=5");
+                _restClient.AddDefaultHeader("DHL-API-Key", _dhlSettings.ApiKey);
                 _restClient.FollowRedirects = false;
 
                 RestRequest restRequest = new RestRequest(Method.GET);
@@ -46,32 +53,24 @@ namespace Infrastructure.Services
 
                 var respons = await _restClient.ExecuteAsync(restRequest);
 
-                JsonDto JsonDto = new JsonDto();
+
+                DHLJsonDto jsonDto = new DHLJsonDto();
 
                 try
                 {
-                    JsonDto = JsonSerializer.Deserialize<JsonDto>(respons.Content, _JsonSerializerOptions);
+                    jsonDto = JsonSerializer.Deserialize<DHLJsonDto>(respons.Content, _JsonSerializerOptions);
+                
+                    shippingStatus.Add(new DHLShippingStatusDto()
+                    {
+                        TrackingNumber = jsonDto.Shipments.FirstOrDefault().Id,
+                        ActualStatus = (DHLStatus)Enum.Parse(typeof(DHLStatus), jsonDto.Shipments.FirstOrDefault().Status.StatusCode)
+                    });
                 }
                 catch
                 {
                 }
 
-                foreach (var item in JsonDto.TuStatus)
-                {
-                    try
-                    {
-                        shippingStatus.Add(new ShippingStatusDto()
-                        {
-                            TrackingNumber = item.TuNo,
-                            ActualStatus = item.ProgressBar.StatusInfo.Contains("DELIVEREDPS") ? GLSStatus.DELIVERED : (GLSStatus)Enum.Parse(typeof(GLSStatus), item.ProgressBar.StatusInfo)
-                        });
-                    }
-                    catch
-                    {
-                    }
-                }
-
-                await Task.Delay(500);
+                await Task.Delay(100);
             }
 
             return shippingStatus.AsEnumerable();
