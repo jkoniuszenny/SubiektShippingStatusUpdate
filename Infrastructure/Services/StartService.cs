@@ -254,7 +254,7 @@ namespace Infrastructure.Services
                         {
                             FlagId = a.flg_Id,
                             FlagGroup = a.flg_IdGrupy,
-                            DHLStatus = DHLStatus.transit
+                            DHLStatus = DHLStatus.indelivery
                         });
                         break;
                     case 10:

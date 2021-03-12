@@ -26,16 +26,50 @@ namespace Infrastructure.Repositories
 
         public async Task UpdateFlagValue(IEnumerable<FlagValue> flagValues)
         {
-            _databaseContext.FlagValue.UpdateRange(flagValues);
+            foreach (var item in flagValues)
+            {
 
-            await _databaseContext.SaveChangesAsync();
 
+                try
+                {
+                    _databaseContext.FlagValue.Update(item);
+                    await _databaseContext.SaveChangesAsync();
+                }
+                catch 
+                {
+
+                    
+                }
+                finally
+                {
+                    //Parallel.ForEach(flagValues, f =>
+                    //{
+                        _databaseContext.Entry(item).State = EntityState.Detached;
+                    //});
+                }
+            }
         }
 
         public async Task InsertFlagValue(IEnumerable<FlagValue> flagValues)
         {
-            await _databaseContext.FlagValue.AddRangeAsync(flagValues);
-            await _databaseContext.SaveChangesAsync();
+            try
+            {
+                await _databaseContext.FlagValue.AddRangeAsync(flagValues);
+                await _databaseContext.SaveChangesAsync();
+            }
+            catch 
+            {
+
+                
+            }
+            finally
+            {
+                Parallel.ForEach(flagValues, f =>
+                {
+                    _databaseContext.Entry(f).State = EntityState.Detached;
+                });
+            }
+
         }
     }
 }

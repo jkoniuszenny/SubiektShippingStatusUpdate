@@ -27,6 +27,7 @@ namespace Infrastructure.Database
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.EnableDetailedErrors(true);
+            optionsBuilder.EnableSensitiveDataLogging(true);
             //optionsBuilder.UseSqlServer("Server=localhost; Database=neopak2; Trusted_Connection=True; MultipleActiveResultSets=true");// _settings.ConnectionString, s => s.CommandTimeout(60));
             optionsBuilder.UseSqlServer(_databaseSettings.ConnectionString);
             optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);

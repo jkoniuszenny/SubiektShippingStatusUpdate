@@ -59,11 +59,14 @@ namespace Infrastructure.Services
                 try
                 {
                     jsonDto = JsonSerializer.Deserialize<DHLJsonDto>(respons.Content, _JsonSerializerOptions);
-                
+                    var status = jsonDto.Shipments.FirstOrDefault().Status.StatusCode;
+
+                    status = !jsonDto.Shipments.FirstOrDefault().Status.Description.ToLower().Contains("to a courier to deliver") ? status : "indelivery";
+
                     shippingStatus.Add(new DHLShippingStatusDto()
                     {
                         TrackingNumber = jsonDto.Shipments.FirstOrDefault().Id,
-                        ActualStatus = (DHLStatus)Enum.Parse(typeof(DHLStatus), jsonDto.Shipments.FirstOrDefault().Status.StatusCode)
+                        ActualStatus = (DHLStatus)Enum.Parse(typeof(DHLStatus), status)
                     });
                 }
                 catch

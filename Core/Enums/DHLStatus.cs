@@ -10,6 +10,7 @@ namespace Core.Enums
         pretransit = 1,
         transit = 2,
         delivered = 3,
-        failure = 4
+        failure = 4,
+        indelivery = 5
     }
 }
